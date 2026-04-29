@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pré-cadastro · Serasa Pass</title>
+    <style>
+      :root {
+        --paper: #faf7ee;
+        --paper2: #f3efe2;
+        --bg-dark: #062818;
+        --primary: #00995D;
+        --primary-dark: #007A4A;
+        --accent: #34d98a;
+        --moss100: #e8f5ed;
+        --moss400: #68d89b;
+        --moss500: #3a8a5a;
+        --moss700: #2e6645;
+        --moss900: #1a3d2b;
+        --ink900: #1A2320;
+        --ink700: #3d4a46;
+        --ink500: #727c78;
+        --ink300: #c7cbc7;
+        --ink200: #e8eae8;
+        --amber: #d79e3a;
+        --amber-bg: #fdf3e0;
+        --rose: #c94646;
+        --rose-bg: #fff0f0;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { background: var(--ink200); }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        color: var(--ink900);
+        line-height: 1.45;
+        padding: 16px;
+      }
+      .container { max-width: 460px; margin: 0 auto; }
+
+      /* Settings */
+      .settings {
+        background: white;
+        border: 1px solid var(--ink200);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        font-size: 12px;
+      }
+      .settings summary {
+        cursor: pointer; user-select: none;
+        font-family: ui-monospace, monospace;
+        color: var(--ink500); font-weight: 600;
+        letter-spacing: 0.6px; text-transform: uppercase;
+        font-size: 11px;
+        display: flex; align-items: center; gap: 6px;
+      }
+      .settings summary::-webkit-details-marker { display: none; }
+      .settings summary svg { width: 14px; height: 14px; }
+      .settings .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+      .settings label {
+        display: block; font-size: 10px; font-family: ui-monospace, monospace;
+        color: var(--ink500); margin-bottom: 4px;
+        text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+      }
+      .settings input, .settings select {
+        width: 100%; padding: 7px 10px; font: inherit; font-size: 12px;
+        border: 1px solid var(--ink200); border-radius: 8px;
+        background: var(--paper); color: var(--ink900);
+      }
+      .settings input:focus, .settings select:focus {
+        outline: none; border-color: var(--moss400);
+        box-shadow: 0 0 0 3px var(--moss100);
+      }
+      .mock-toggle {
+        display: flex; align-items: center; gap: 8px;
+        margin-top: 12px; padding-top: 12px;
+        border-top: 1px dashed var(--ink200);
+        font-family: ui-monospace, monospace;
+        font-size: 11px; font-weight: 600;
+        color: var(--ink700);
+        text-transform: uppercase; letter-spacing: 0.6px;
+        cursor: pointer;
+      }
+      .mock-toggle input { margin: 0; cursor: pointer; accent-color: var(--primary); }
+
+      .mock-badge {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        max-width: 460px; margin: 0 auto 12px;
+        padding: 8px 12px;
+        background: var(--amber-bg); color: var(--warning-text, #92400e);
+        border: 1px solid var(--amber);
+        border-radius: 999px;
+        font-family: ui-monospace, monospace;
+        font-size: 11px; font-weight: 700;
+        letter-spacing: 1px; text-transform: uppercase;
+      }
+      .mock-badge svg { width: 14px; height: 14px; }
+      .mock-badge.hidden { display: none; }
+
+      /* Card */
+      .va { background: var(--paper); border-radius: 24px; padding: 22px 18px 18px; border: 1px solid var(--ink200); }
+      .va-eyebrow { font-family: ui-monospace, monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.6px; color: var(--moss700); text-transform: uppercase; }
+      .va-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+      .va-step {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-family: ui-monospace, monospace;
+        font-size: 10px; font-weight: 700; letter-spacing: 1.4px;
+        color: var(--moss700); background: var(--moss100);
+        padding: 4px 9px 4px 8px; border-radius: 999px;
+      }
+      .va-step svg { width: 12px; height: 12px; }
+      .va-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+      .va-title-icon {
+        width: 32px; height: 32px; border-radius: 10px;
+        background: var(--moss100); color: var(--moss700);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      }
+      .va-title-icon svg { width: 18px; height: 18px; }
+      .va-title { font-size: 22px; font-weight: 700; line-height: 1.15; color: var(--ink900); letter-spacing: -0.01em; }
+      .va-sub { font-size: 13px; color: var(--ink500); margin: 4px 0 18px 42px; }
+
+      .va-list { display: flex; flex-direction: column; }
+      .va-row { padding: 11px 0; border-bottom: 1px dashed var(--ink200); display: flex; align-items: center; gap: 12px; }
+      .va-row:last-child { border-bottom: none; }
+      .va-row-icon {
+        width: 32px; height: 32px; border-radius: 10px;
+        background: white; color: var(--ink700);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        border: 1px solid var(--ink200);
+      }
+      .va-row-icon svg { width: 16px; height: 16px; }
+      .va-row.filled .va-row-icon { background: var(--moss100); color: var(--moss700); border-color: var(--moss400); }
+      .va-info { flex: 1; min-width: 0; }
+      .va-label { font-family: ui-monospace, monospace; font-size: 10px; font-weight: 600; letter-spacing: 1.2px; color: var(--ink500); text-transform: uppercase; margin-bottom: 1px; }
+      .va-val { font-size: 15px; font-weight: 600; color: var(--ink900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .va-val.empty { color: var(--ink300); font-weight: 400; font-style: italic; }
+      .va-check { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .va-check.on { background: var(--moss500); color: white; }
+      .va-check.on svg { width: 11px; height: 11px; }
+      .va-check.off { border: 1.5px dashed var(--ink300); }
+
+      .va-actions { display: flex; gap: 8px; margin-top: 16px; align-items: center; }
+      .va-gen {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: white; border: 1px solid var(--ink200);
+        padding: 11px 14px; border-radius: 12px;
+        font-family: ui-monospace, monospace;
+        font-size: 11px; font-weight: 700; letter-spacing: 1px;
+        color: var(--moss700); text-transform: uppercase; cursor: pointer; white-space: nowrap;
+      }
+      .va-gen:hover { background: var(--moss100); border-color: var(--moss400); }
+      .va-gen svg { width: 14px; height: 14px; }
+      .va-cta {
+        flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        background: var(--ink900); color: var(--paper); border: none;
+        padding: 13px 16px; border-radius: 12px;
+        font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+      }
+      .va-cta:hover:not(:disabled) { background: black; }
+      .va-cta:disabled { opacity: 0.35; cursor: not-allowed; }
+      .va-cta svg { width: 16px; height: 16px; }
+
+      /* Success animations */
+      @keyframes scaleIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(58, 138, 90, 0.45); }
+        70% { box-shadow: 0 0 0 22px rgba(58, 138, 90, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(58, 138, 90, 0); }
+      }
+      @keyframes drawCheck { from { stroke-dashoffset: 30; } to { stroke-dashoffset: 0; } }
+      @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes confetti {
+        0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+        20% { opacity: 1; }
+        100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .va-success { text-align: center; padding: 14px 8px 8px; position: relative; overflow: hidden; }
+      .va-success-icon {
+        width: 84px; height: 84px; border-radius: 50%;
+        background: var(--moss100);
+        display: inline-flex; align-items: center; justify-content: center;
+        margin: 12px auto 0;
+        animation: scaleIn 0.4s ease-out, pulse 2.4s ease-out 0.6s infinite;
+      }
+      .va-success-icon svg { width: 44px; height: 44px; color: var(--moss500); }
+      .va-success-icon svg path { stroke-dasharray: 30; animation: drawCheck 0.5s ease-out 0.3s both; }
+      .va-success-eye {
+        font-family: ui-monospace, monospace;
+        font-size: 10px; font-weight: 700; letter-spacing: 2px;
+        color: var(--moss700); text-transform: uppercase;
+        margin-top: 16px;
+        animation: fadeUp 0.4s ease-out 0.4s both;
+      }
+      .va-success-title { font-size: 26px; font-weight: 700; margin-top: 6px; letter-spacing: -0.01em; animation: fadeUp 0.4s ease-out 0.5s both; }
+      .va-success-sub { font-size: 14px; color: var(--ink500); margin-top: 6px; animation: fadeUp 0.4s ease-out 0.6s both; }
+
+      .confetti { position: absolute; width: 7px; height: 12px; top: -10px; animation: confetti 3.4s ease-in forwards; }
+      .confetti:nth-child(1) { left: 8%; background: var(--moss400); animation-delay: 0.2s; }
+      .confetti:nth-child(2) { left: 22%; background: var(--primary); animation-delay: 0.5s; }
+      .confetti:nth-child(3) { left: 40%; background: var(--amber); animation-delay: 0.1s; transform: rotate(20deg); }
+      .confetti:nth-child(4) { left: 58%; background: var(--moss500); animation-delay: 0.7s; }
+      .confetti:nth-child(5) { left: 75%; background: var(--moss400); animation-delay: 0.3s; transform: rotate(-15deg); }
+      .confetti:nth-child(6) { left: 88%; background: var(--primary); animation-delay: 0.6s; }
+
+      .va-next {
+        background: var(--moss100); border-radius: 16px;
+        padding: 14px; margin: 18px 0 4px;
+        display: flex; align-items: flex-start; gap: 12px;
+        border: 1px solid var(--moss400);
+        animation: fadeUp 0.4s ease-out 0.75s both;
+      }
+      .va-next-icon {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: white; color: var(--moss700);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      }
+      .va-next-icon svg { width: 20px; height: 20px; }
+      .va-next-info { text-align: left; flex: 1; }
+      .va-next-eye { font-family: ui-monospace, monospace; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; color: var(--moss700); text-transform: uppercase; margin-bottom: 2px; }
+      .va-next-title { font-size: 14px; font-weight: 700; color: var(--ink900); margin-bottom: 2px; }
+      .va-next-sub { font-size: 12px; color: var(--ink700); }
+
+      .va-summary { margin-top: 14px; animation: fadeUp 0.4s ease-out 0.85s both; }
+      .summary-rows { background: white; border: 1px solid var(--ink200); border-radius: 14px; padding: 4px 14px; }
+      .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; font-size: 13px; gap: 8px; }
+      .summary-row + .summary-row { border-top: 1px solid var(--ink200); }
+      .summary-row .lbl { color: var(--ink500); display: inline-flex; align-items: center; gap: 8px; }
+      .summary-row .lbl svg { width: 14px; height: 14px; color: var(--ink500); }
+      .summary-row .val { font-weight: 700; color: var(--ink900); text-align: right; }
+      .summary-row .val.ok { color: var(--moss700); display: inline-flex; align-items: center; gap: 4px; }
+      .summary-row .val.ok svg { width: 13px; height: 13px; }
+      .summary-row .val.pending { color: var(--amber); display: inline-flex; align-items: center; gap: 4px; }
+      .summary-row .val.pending svg { width: 13px; height: 13px; }
+
+      .va-success-actions { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+      .va-cta-primary {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        background: var(--primary); color: white; border: none;
+        padding: 14px 16px; border-radius: 12px;
+        font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+        animation: fadeUp 0.4s ease-out 0.95s both;
+      }
+      .va-cta-primary:hover { background: var(--primary-dark); }
+      .va-cta-primary svg { width: 16px; height: 16px; }
+      .va-cta-ghost {
+        background: transparent; color: var(--ink500); border: none;
+        padding: 8px 16px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+        animation: fadeUp 0.4s ease-out 1.05s both;
+      }
+      .va-cta-ghost:hover { color: var(--ink900); }
+
+      /* Loading / error states */
+      .va-loading {
+        text-align: center; padding: 40px 20px;
+      }
+      .va-loading-spinner {
+        display: inline-block; width: 36px; height: 36px;
+        border: 3px solid var(--moss100);
+        border-top-color: var(--primary);
+        border-radius: 50%; animation: spin 0.8s linear infinite;
+      }
+      .va-loading-text {
+        margin-top: 14px; font-family: ui-monospace, monospace;
+        font-size: 11px; font-weight: 700; letter-spacing: 1.6px;
+        color: var(--moss700); text-transform: uppercase;
+      }
+      .va-error {
+        background: var(--rose-bg);
+        border: 1px solid var(--rose);
+        border-radius: 12px;
+        padding: 14px;
+        margin-top: 14px;
+        font-size: 13px;
+        color: var(--rose);
+      }
+      .va-error pre {
+        margin-top: 6px; font-size: 11px;
+        white-space: pre-wrap; word-break: break-all;
+        background: white; padding: 8px; border-radius: 6px;
+        color: var(--ink700);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <details class="settings">
+        <summary>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 0 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          Configuração do simulador
+        </summary>
+        <div class="row">
+          <div>
+            <label for="baseUrl">API base URL</label>
+            <input id="baseUrl" type="text" value="https://serasa-api.headtalk.uk" />
+          </div>
+          <div>
+            <label for="groupName">Turma</label>
+            <select id="groupName"><option value="" disabled selected>Carregando…</option></select>
+          </div>
+        </div>
+        <label class="mock-toggle">
+          <input id="mockMode" type="checkbox" />
+          <span>Simulação local (sem chamar API)</span>
+        </label>
+      </details>
+
+      <div id="mockBadge" class="mock-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        Modo simulação · API não será chamada
+      </div>
+      <div id="stage"></div>
+    </div>
+
+    <script>
+      // ===== SVG icons =====
+      const ICONS = {
+        shield: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+        wand: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M15 9h0M17.8 6.2L19 5M3 21l9-9M12.2 6.2L11 5"/></svg>',
+        check: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg>',
+        arrow: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>',
+        user: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>',
+        id: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M14 10h4M14 14h4M5 17c1-2 3-3 4-3s3 1 4 3"/></svg>',
+        cake: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V11h16v10M4 16h16M12 11V7M9 4c0 1 .5 2 1.5 2.5C11.5 7 12 6 12 5.5M14 4c0 1-.5 2-1.5 2.5"/></svg>',
+        mail: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+        phone: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-3 2c1 3 3 5 6 6l2-3 5 2v4c0 1-1 2-2 2C9 22 2 15 2 6c0-1 1-2 2-2"/></svg>',
+        home: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>',
+        score: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 8-8M16 8h5v5"/></svg>',
+        face: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 14c1.2 1.5 2.5 2 4 2s2.8-.5 4-2M9 9.5h.01M15 9.5h.01"/></svg>',
+        palm: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>',
+        bookmark: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+        clock: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+        group: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="8" r="2.5"/><path d="M17 14c2.8 0 5 2.2 5 5"/></svg>',
+      };
+      const SVG_PARSER = new DOMParser();
+      function svg(name) {
+        const doc = SVG_PARSER.parseFromString(ICONS[name] || ICONS.check, "image/svg+xml");
+        return doc.documentElement.cloneNode(true);
+      }
+
+      // ===== State =====
+      const state = {
+        screen: "creds", // creds | loading | success | error
+        data: { fullName: "", cpf: "", birthDate: "", email: "", phone: "", address: "", serasaScore: null, groupName: "" },
+        face: false,
+        error: null,
+      };
+
+      // ===== Fake data generators =====
+      const FIRST = ["Ana","João","Maria","Pedro","Carla","Lucas","Beatriz","Rafael","Juliana","Felipe","Camila","Gabriel","Larissa","Bruno","Patrícia","Thiago","Mariana","Diego","Fernanda","Rodrigo"];
+      const LAST = ["Silva","Santos","Oliveira","Souza","Lima","Costa","Pereira","Almeida","Rodrigues","Martins","Carvalho","Gomes","Ribeiro","Nascimento","Araújo","Cardoso"];
+      const STREETS = ["Rua das Flores","Av. Paulista","Rua Santa Catarina","Av. Brasil","Rua Augusta","Rua Voluntários","Av. das Américas","Rua dos Pinheiros"];
+      const NEIGH = ["Centro","Jardim Paulista","Vila Mariana","Pinheiros","Moema","Itaim","Bela Vista","Vila Madalena"];
+      const CITIES = ["São Paulo — SP","Porto Alegre — RS","Rio de Janeiro — RJ","Belo Horizonte — MG","Curitiba — PR"];
+      const rand = (a) => a[Math.floor(Math.random() * a.length)];
+      const randDigits = (n) => Array.from({length: n}, () => Math.floor(Math.random() * 10)).join("");
+
+      function genCpf() {
+        const d = Array.from({length: 9}, () => Math.floor(Math.random() * 10));
+        const calc = (arr, w) => {
+          let s = 0;
+          for (let i = 0; i < arr.length; i++) s += arr[i] * (w - i);
+          const r = (s * 10) % 11;
+          return r === 10 ? 0 : r;
+        };
+        d.push(calc(d, 10));
+        d.push(calc(d, 11));
+        const s = d.join("");
+        return `${s.slice(0,3)}.${s.slice(3,6)}.${s.slice(6,9)}-${s.slice(9)}`;
+      }
+      function slugify(s) {
+        return s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/\s+/g, ".").replace(/[^a-z.]/g, "");
+      }
+      function genFakeData() {
+        const fn = rand(FIRST), ln = rand(LAST);
+        state.data.fullName = `${fn} ${ln} ${rand(LAST)}`;
+        state.data.cpf = genCpf();
+        const y = 1970 + Math.floor(Math.random() * 35);
+        const m = String(1 + Math.floor(Math.random() * 12)).padStart(2, "0");
+        const d = String(1 + Math.floor(Math.random() * 28)).padStart(2, "0");
+        state.data.birthDate = `${d}/${m}/${y}`;
+        state.data.email = `${slugify(fn)}.${slugify(ln)}.${Math.floor(Math.random() * 900 + 100)}@example.com`;
+        const ddd = String(11 + Math.floor(Math.random() * 80)).padStart(2, "0");
+        state.data.phone = `(${ddd}) 9${randDigits(4)}-${randDigits(4)}`;
+        state.data.address = `${rand(STREETS)}, ${100 + Math.floor(Math.random() * 900)}, ${rand(NEIGH)}, ${rand(CITIES)}`;
+        state.data.serasaScore = 600 + Math.floor(Math.random() * 350);
+        state.face = true;
+      }
+
+      const FIELDS = [
+        { key: "fullName", label: "Nome completo", placeholder: "JOÃO XXX SILVA", icon: "user" },
+        { key: "cpf", label: "CPF", placeholder: "000.000.000-00", icon: "id" },
+        { key: "birthDate", label: "Nascimento", placeholder: "DD/MM/AAAA", icon: "cake" },
+        { key: "email", label: "E-mail", placeholder: "fulano@email.com", icon: "mail" },
+        { key: "phone", label: "Telefone", placeholder: "(00) 00000-0000", icon: "phone" },
+        { key: "address", label: "Endereço", placeholder: "Rua, número, cidade", icon: "home" },
+        { key: "serasaScore", label: "Score Serasa", placeholder: "0–1000", icon: "score" },
+        { key: "face", label: "Biometria Facial", placeholder: "—", icon: "face" },
+      ];
+      function valueFor(key) {
+        if (key === "face") return state.face ? "Verificada" : null;
+        const v = state.data[key];
+        return v === "" || v == null ? null : v;
+      }
+      function filledCount() { return FIELDS.filter(f => valueFor(f.key) != null).length; }
+
+      // ===== DOM helpers =====
+      function el(tag, opts, children) {
+        const node = document.createElement(tag);
+        if (opts) {
+          if (opts.class) node.className = opts.class;
+          if (opts.text != null) node.textContent = opts.text;
+          if (opts.style) node.setAttribute("style", opts.style);
+          if (opts.disabled) node.disabled = true;
+          if (opts.onClick) node.onclick = opts.onClick;
+        }
+        if (children) for (const c of children) {
+          if (c == null) continue;
+          node.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+        }
+        return node;
+      }
+
+      function render() {
+        const stage = document.getElementById("stage");
+        stage.replaceChildren();
+        if (state.screen === "creds") stage.appendChild(renderForm());
+        else if (state.screen === "loading") stage.appendChild(renderLoading());
+        else if (state.screen === "success") stage.appendChild(renderSuccess());
+        else if (state.screen === "error") stage.appendChild(renderError());
+      }
+
+      function renderForm() {
+        const card = el("div", { class: "va" });
+        card.append(el("div", { class: "va-head" }, [
+          el("div", { class: "va-eyebrow", text: "PRÉ-CADASTRO" }),
+          el("div", { class: "va-step" }, [svg("check"), document.createTextNode(`${filledCount()}/8`)]),
+        ]));
+        card.append(el("div", { class: "va-title-row" }, [
+          el("div", { class: "va-title-icon" }, [svg("shield")]),
+          el("h2", { class: "va-title", text: "Credenciais Serasa Pass" }),
+        ]));
+        card.append(el("p", { class: "va-sub", text: "Dados que serão compartilhados com a Unimed." }));
+
+        const list = el("div", { class: "va-list" });
+        FIELDS.forEach(f => {
+          const v = valueFor(f.key);
+          const filled = v != null;
+          list.appendChild(el("div", { class: "va-row" + (filled ? " filled" : "") }, [
+            el("div", { class: "va-row-icon" }, [svg(f.icon)]),
+            el("div", { class: "va-info" }, [
+              el("div", { class: "va-label", text: f.label }),
+              el("div", { class: "va-val" + (filled ? "" : " empty"), text: filled ? v : f.placeholder }),
+            ]),
+            filled ? el("div", { class: "va-check on" }, [svg("check")]) : el("div", { class: "va-check off" }),
+          ]));
+        });
+        card.append(list);
+
+        card.append(el("div", { class: "va-actions" }, [
+          el("button", {
+            class: "va-gen",
+            onClick: () => { genFakeData(); render(); },
+          }, [svg("wand"), document.createTextNode("GERAR")]),
+          el("button", {
+            class: "va-cta",
+            disabled: filledCount() < 8 || !state.data.groupName,
+            onClick: submitToApi,
+          }, [document.createTextNode("Concluir pré-cadastro"), svg("arrow")]),
+        ]));
+        return card;
+      }
+
+      function renderLoading() {
+        const card = el("div", { class: "va" });
+        card.append(el("div", { class: "va-loading" }, [
+          el("div", { class: "va-loading-spinner" }),
+          el("div", { class: "va-loading-text", text: "Enviando pré-cadastro" }),
+        ]));
+        return card;
+      }
+
+      function renderError() {
+        const card = el("div", { class: "va" });
+        const succ = el("div", { class: "va-success" });
+        succ.appendChild(el("div", {
+          class: "va-success-icon",
+          style: "background:var(--rose-bg)",
+        }, [(() => { const w = svg("clock"); w.setAttribute("style", "color:var(--rose)"); return w; })()]));
+        succ.appendChild(el("div", { class: "va-success-eye", text: "FALHA AO SALVAR", style: "color:var(--rose)" }));
+        succ.appendChild(el("h2", { class: "va-success-title", text: "Não conseguimos enviar" }));
+        succ.appendChild(el("p", { class: "va-success-sub", text: "Verifique a configuração da API e tente novamente." }));
+        card.append(succ);
+
+        const errBox = el("div", { class: "va-error" });
+        errBox.appendChild(el("strong", { text: "Erro" }));
+        const pre = el("pre");
+        pre.textContent = state.error || "Erro desconhecido";
+        errBox.appendChild(pre);
+        card.append(errBox);
+
+        card.append(el("div", { class: "va-success-actions" }, [
+          el("button", { class: "va-cta-primary", text: "Tentar novamente", onClick: submitToApi }),
+          el("button", { class: "va-cta-ghost", text: "Voltar", onClick: () => { state.screen = "creds"; render(); } }),
+        ]));
+        return card;
+      }
+
+      function renderSuccess() {
+        const card = el("div", { class: "va" });
+        const succ = el("div", { class: "va-success" });
+        for (let i = 0; i < 6; i++) succ.appendChild(el("span", { class: "confetti" }));
+        succ.appendChild(el("div", { class: "va-success-icon" }, [svg("check")]));
+        succ.appendChild(el("div", { class: "va-success-eye", text: "TUDO PRONTO" }));
+        succ.appendChild(el("h2", { class: "va-success-title", text: "Pré-cadastro confirmado" }));
+        succ.appendChild(el("p", { class: "va-success-sub", text: `Bem-vindo(a) à Caminhada · ${state.data.groupName}` }));
+        card.append(succ);
+
+        card.append(el("div", { class: "va-next" }, [
+          el("div", { class: "va-next-icon" }, [svg("palm")]),
+          el("div", { class: "va-next-info" }, [
+            el("div", { class: "va-next-eye", text: "PRÓXIMO PASSO" }),
+            el("div", { class: "va-next-title", text: "Registre sua biometria palmar na aula" }),
+            el("div", { class: "va-next-sub", text: `Apresente-se 10 min antes — ${state.data.groupName}` }),
+          ]),
+        ]));
+
+        const sum = el("div", { class: "va-summary" });
+        const rows = el("div", { class: "summary-rows" });
+        const items = [
+          { lbl: "CPF", icon: "id", val: state.data.cpf || "—" },
+          { lbl: "Turma", icon: "group", val: state.data.groupName },
+          { lbl: "Credenciais Serasa", icon: "shield", val: "Validadas", mod: "ok" },
+          { lbl: "Biometria Facial", icon: "face", val: "Validadas", mod: "ok" },
+          { lbl: "Biometria Palmar", icon: "palm", val: "A registrar na aula", mod: "pending" },
+        ];
+        items.forEach(item => {
+          const v = el("span", { class: "val " + (item.mod ?? "") });
+          if (item.mod === "ok") { v.appendChild(svg("check")); v.appendChild(document.createTextNode(item.val)); }
+          else if (item.mod === "pending") { v.appendChild(svg("clock")); v.appendChild(document.createTextNode(item.val)); }
+          else v.textContent = item.val;
+          rows.appendChild(el("div", { class: "summary-row" }, [
+            el("span", { class: "lbl" }, [svg(item.icon), document.createTextNode(item.lbl)]),
+            v,
+          ]));
+        });
+        sum.appendChild(rows);
+        card.append(sum);
+
+        const restart = () => {
+          state.data = { fullName: "", cpf: "", birthDate: "", email: "", phone: "", address: "", serasaScore: null, groupName: state.data.groupName };
+          state.face = false;
+          state.screen = "creds";
+          render();
+        };
+        card.append(el("div", { class: "va-success-actions" }, [
+          el("button", { class: "va-cta-primary", onClick: restart }, [svg("bookmark"), document.createTextNode("Salvar comprovante")]),
+          el("button", { class: "va-cta-ghost", text: "Novo pré-cadastro", onClick: restart }),
+        ]));
+        return card;
+      }
+
+      // ===== API =====
+      const baseUrlInput = document.getElementById("baseUrl");
+      const groupSelect = document.getElementById("groupName");
+      const mockModeInput = document.getElementById("mockMode");
+      const baseUrl = () => baseUrlInput.value.trim().replace(/\/+$/, "");
+
+      const FALLBACK_GROUPS = [
+        "Seg 06h · Ibirapuera", "Ter 07h · Vila Olímpia", "Qua 18h · Pinheiros",
+        "Qui 06h30 · Vila Olímpia", "Sex 12h · Ibirapuera",
+        "Sáb 10h · Ibirapuera", "Dom 09h · Pinheiros",
+      ];
+      function fillGroupSelect(groups, suffix) {
+        groupSelect.replaceChildren();
+        for (const g of groups) {
+          const opt = document.createElement("option");
+          opt.value = g;
+          opt.textContent = suffix ? `${g} ${suffix}` : g;
+          groupSelect.appendChild(opt);
+        }
+        groupSelect.value = groups[0];
+        state.data.groupName = groups[0];
+      }
+      async function loadGroups() {
+        if (mockModeInput.checked) {
+          fillGroupSelect(FALLBACK_GROUPS);
+          render();
+          return;
+        }
+        groupSelect.replaceChildren(el("option", { text: "Carregando…", disabled: true }));
+        try {
+          const res = await fetch(`${baseUrl()}/users/groups`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const groups = Array.isArray(data.groups) && data.groups.length ? data.groups : FALLBACK_GROUPS;
+          fillGroupSelect(groups);
+          render();
+        } catch {
+          fillGroupSelect(FALLBACK_GROUPS, "(offline)");
+          render();
+        }
+      }
+      groupSelect.addEventListener("change", () => { state.data.groupName = groupSelect.value; render(); });
+      baseUrlInput.addEventListener("change", loadGroups);
+      const mockBadge = document.getElementById("mockBadge");
+      function refreshMockBadge() {
+        mockBadge.classList.toggle("hidden", !mockModeInput.checked);
+      }
+      mockModeInput.addEventListener("change", () => { refreshMockBadge(); loadGroups(); });
+      refreshMockBadge();
+
+      async function submitToApi() {
+        state.screen = "loading";
+        render();
+        const payload = {
+          fullName: state.data.fullName,
+          cpf: state.data.cpf.replace(/\D/g, ""),
+          birthDate: state.data.birthDate,
+          email: state.data.email,
+          phone: state.data.phone,
+          address: state.data.address,
+          serasaScore: state.data.serasaScore,
+          groupName: state.data.groupName,
+        };
+
+        if (mockModeInput.checked) {
+          await new Promise(r => setTimeout(r, 700));
+          state.error = null;
+          state.screen = "success";
+          render();
+          return;
+        }
+
+        try {
+          const res = await fetch(`${baseUrl()}/users`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const text = await res.text();
+          if (!res.ok) {
+            state.error = `HTTP ${res.status} — ${text || "(sem corpo)"}`;
+            state.screen = "error";
+            render();
+            return;
+          }
+          state.error = null;
+          state.screen = "success";
+          render();
+        } catch (err) {
+          const msg = String(err);
+          state.error = /failed to fetch|networkerror|load failed/i.test(msg)
+            ? `${msg}\n\nProvável bloqueio de CORS ou API inacessível em ${baseUrl()}.\nDicas:\n• Aponte para um backend local (ex: http://localhost:8765) com CORS aberto\n• Ou ative "Simulação local" nas configurações para pular a chamada`
+            : msg;
+          state.screen = "error";
+          render();
+        }
+      }
+
+      // ===== Init =====
+      loadGroups();
+      render();
+    </script>
+  </body>
+</html>
